@@ -89,4 +89,36 @@ router.post("/login", async (req, res, next) => {
   }
 });
 
+export async function requireAuth(req, res, next) {
+  const header = req.headers.authorization;
+
+  if (!header || !header.startsWith("Bearer ")) {
+    return res.status(401).json({ error: "Missing or malformed token" });
+  }
+
+  const token = header.slice(7);
+
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+
+    const { rows } = await pool.query(
+      "SELECT id, email, paused FROM users WHERE id = $1",
+      [payload.sub]
+    );
+
+    if (rows.length === 0) {
+      return res.status(401).json({ error: "User not found" });
+    }
+
+    if (rows[0].paused) {
+      return res.status(423).json({ error: "Account is paused" });
+    }
+
+    req.user = { id: rows[0].id, email: rows[0].email };
+    next();
+  } catch (err) {
+    return res.status(401).json({ error: "Invalid or expired token" });
+  }
+}
+
 export default router;
