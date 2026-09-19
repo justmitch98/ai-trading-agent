@@ -19,6 +19,7 @@
     "express": "^4.19.2",
     "helmet": "^7.1.0",
     "morgan": "^1.10.0"
+    "pg": "^8.11.3"
   },
   "devDependencies": {
     "eslint": "^10.11.0",
