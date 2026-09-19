@@ -87,10 +87,11 @@ app.use((req, res) => {
 // ---- Global Error Handler ----
 app.use((err, req, res, next) => {
   console.error("[ERROR]", err.message);
+  console.error("[STACK]", err.stack);
   res.status(err.status || 500).json({
-    error: process.env.NODE_ENV === "production"
-      ? "Internal server error"
-      : err.message
+    error: err.message,                    // ← show it in prod temporarily
+    type: err.name,
+    stack: err.stack?.split("\n").slice(0, 5)  // first 5 frames
   });
 });
 
