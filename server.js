@@ -5,6 +5,9 @@ import helmet from "helmet";
 import morgan from "morgan";
 import dotenv from "dotenv";
 import bcryptjs from "bcryptjs";
+import authRoutes from "./src/routes/auth.js";
+
+app.use("/api/auth", authRoutes);
 
 import healthRoutes from "./src/routes/health.js";
 // import authRoutes from "./src/routes/auth.js";       // we'll add next
