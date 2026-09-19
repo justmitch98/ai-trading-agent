@@ -10,12 +10,6 @@ import healthRoutes from "./src/routes/health.js";
 // import authRoutes from "./src/routes/auth.js";       // we'll add next
 // import proposalRoutes from "./src/routes/proposals.js";
 
-// server.js — add to imports
-import authRoutes from "./src/routes/auth.js";
-
-// server.js — add to routes section
-app.use("/api/auth", authRoutes);
-
 dotenv.config();
 
 const app = express();
