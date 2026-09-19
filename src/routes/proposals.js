@@ -3,11 +3,12 @@ import { Router } from "express";
 import pool from "../config/db.js";
 import { requireAuth } from "../middleware/auth.js";
 import { generateProposal, executeTrade } from "../services/agent.js";
+import { requireAuth, blockIfPaused } from "../middleware/auth.js";
 
 const router = Router();
 
 // All proposal routes require auth
-router.use(requireAuth);
+router.use(requireAuth, blockIfPaused)
 
 // POST /api/proposals — agent generates a proposal (no execution)
 router.post("/", async (req, res, next) => {
