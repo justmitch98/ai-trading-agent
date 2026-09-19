@@ -78,6 +78,21 @@ app.get("/", (req, res) => {
   });
 });
 
+// src/routes/auth.js — add near the other routes
+router.post("/pause", requireAuth, async (req, res, next) => {
+  try {
+    await pool.query("UPDATE users SET paused = true WHERE id = $1", [req.user.id]);
+    res.json({ paused: true });
+  } catch (err) { next(err); }
+});
+
+router.post("/resume", requireAuth, async (req, res, next) => {
+  try {
+    await pool.query("UPDATE users SET paused = false WHERE id = $1", [req.user.id]);
+    res.json({ paused: false });
+  } catch (err) { next(err); }
+});
+
 // ---- Temporary diagnostic route ----
 app.get("/api/debug/db", async (req, res) => {
   try {
