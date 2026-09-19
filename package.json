@@ -12,6 +12,7 @@
     "node": ">=20.0.0"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
@@ -21,5 +22,16 @@
   "devDependencies": {
     "eslint": "^10.11.0",
     "nodemon": "^3.1.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/justmitch98/ai-trading-agent.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/justmitch98/ai-trading-agent/issues"
+  },
+  "homepage": "https://github.com/justmitch98/ai-trading-agent#readme"
 }
