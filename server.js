@@ -26,6 +26,13 @@ app.use(cors({
 app.use(express.json({ limit: "1mb" }));
 app.use(morgan("dev"));
 
+app.use(cors({
+  origin: process.env.NODE_ENV === "production"
+    ? ["http://localhost:5173", "https://aitradingbot.surge.sh"]
+    : true,
+  credentials: true
+}));
+
 // ---- Routes ----
 app.use("/api/health", healthRoutes);
 app.use("/api/auth", authRoutes);
