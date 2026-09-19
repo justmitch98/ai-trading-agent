@@ -1,0 +1,25 @@
+{
+  "name": "ai-trading-agent",
+  "version": "0.1.0",
+  "description": "Non-discretionary AI trading agent with per-user sandboxing",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "helmet": "^7.1.0",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "eslint": "^10.11.0",
+    "nodemon": "^3.1.0"
+  }
+}
