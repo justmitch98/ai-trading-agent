@@ -4,12 +4,12 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import dotenv from "dotenv";
-
 import pool from "./src/config/db.js";
 import healthRoutes from "./src/routes/health.js";
 import authRoutes from "./src/routes/auth.js";
 import proposalRoutes from "./src/routes/proposals.js";
 import executionRoutes from "./src/routes/executions.js";
+import { runScheduledProposals } from "./src/jobs/scheduledProposals.js";
 
 dotenv.config();
 
@@ -54,6 +54,20 @@ app.use("/api/health", healthRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/proposals", proposalRoutes);
 app.use("/api/executions", executionRoutes);
+
+app.post("/api/jobs/run-proposals", async (req, res, next) => {
+  const secret = req.headers["x-job-secret"];
+  if (!secret || secret !== process.env.JOB_SECRET) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
+  try {
+    const result = await runScheduledProposals();
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+});
 
 // ---- Root ----
 app.get("/", (req, res) => {
