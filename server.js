@@ -8,6 +8,7 @@ import dotenv from "dotenv";
 import pool from "./src/config/db.js";
 import healthRoutes from "./src/routes/health.js";
 import authRoutes from "./src/routes/auth.js";
+import executionRoutes from "./src/routes/executions.js";
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ app.use(morgan("dev"));
 app.use("/api/health", healthRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/proposals", proposalRoutes);
+app.use("/api/executions", executionRoutes);
 
 // ---- Root ----
 app.get("/", (req, res) => {
