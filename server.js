@@ -57,3 +57,17 @@ app.listen(PORT, () => {
   console.log(`✅ Server running on port ${PORT}`);
   console.log(`   Environment: ${process.env.NODE_ENV}`);
 });
+
+// Temporary diagnostic route — remove before going to production
+app.get("/api/debug/db", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT NOW() as time");
+    res.json({ connected: true, time: result.rows[0].time });
+  } catch (err) {
+    res.status(500).json({ 
+      connected: false, 
+      error: err.message,
+      code: err.code 
+    });
+  }
+});
