@@ -18,7 +18,7 @@ router.post("/", async (req, res, next) => {
       return res.status(400).json({ error: "prompt is required (max 500 chars)" });
     }
 
-    const draft = await generateProposal({ userId: req.user.id, prompt });
+    const draft = await generateProposal({ prompt });
 
     const result = await pool.query(
       `INSERT INTO proposals
