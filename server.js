@@ -28,7 +28,7 @@ app.use(morgan("dev"));
 
 app.use(cors({
   origin: process.env.NODE_ENV === "production"
-    ? ["http://localhost:5173", "https://aitradingbot.surge.sh"]
+    ? ["http://localhost:5173", "https://ai-trading-agent-web.surge.sh/"]
     : true,
   credentials: true
 }));
