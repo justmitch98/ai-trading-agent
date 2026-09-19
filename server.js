@@ -34,11 +34,19 @@ const allowedOrigins = [
   "http://localhost:4000"                       // static serve
 ];
 
+const allowedOrigins = [
+  "https://ai-trading-agent-web.surge.sh",
+  "https://ai-trading-agent-web.onrender.com",
+  "http://localhost:5173",
+  "http://localhost:4173",
+  "http://localhost:4000"
+];
+
 app.use(cors({
   origin: function (origin, callback) {
-    // Allow requests with no origin (curl, Postman, mobile apps)
     if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) return callback(null, true);
+    console.log("[CORS] Rejected origin:", origin);
     callback(new Error(`CORS blocked: ${origin}`));
   },
   credentials: true,
@@ -46,7 +54,6 @@ app.use(cors({
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
-// Explicitly handle preflight for all routes
 app.options("*", cors());
 
 // ---- Routes ----
