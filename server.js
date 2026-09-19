@@ -26,12 +26,28 @@ app.use(cors({
 app.use(express.json({ limit: "1mb" }));
 app.use(morgan("dev"));
 
+const allowedOrigins = [
+  "https://ai-trading-agent-web.surge.sh",
+  "https://ai-trading-agent-web.onrender.com",  // in case you deploy there too
+  "http://localhost:5173",                      // Vite dev
+  "http://localhost:4173",                      // Vite preview
+  "http://localhost:4000"                       // static serve
+];
+
 app.use(cors({
-  origin: process.env.NODE_ENV === "production"
-    ? ["http://localhost:5173", "https://ai-trading-agent-web.surge.sh/"]
-    : true,
-  credentials: true
+  origin: function (origin, callback) {
+    // Allow requests with no origin (curl, Postman, mobile apps)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    callback(new Error(`CORS blocked: ${origin}`));
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
+
+// Explicitly handle preflight for all routes
+app.options("*", cors());
 
 // ---- Routes ----
 app.use("/api/health", healthRoutes);
