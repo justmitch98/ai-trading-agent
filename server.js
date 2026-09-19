@@ -28,14 +28,6 @@ app.use(morgan("dev"));
 
 const allowedOrigins = [
   "https://ai-trading-agent-web.surge.sh",
-  "https://ai-trading-agent-web.onrender.com",  // in case you deploy there too
-  "http://localhost:5173",                      // Vite dev
-  "http://localhost:4173",                      // Vite preview
-  "http://localhost:4000"                       // static serve
-];
-
-const allowedOrigins = [
-  "https://ai-trading-agent-web.surge.sh",
   "https://ai-trading-agent-web.onrender.com",
   "http://localhost:5173",
   "http://localhost:4173",
