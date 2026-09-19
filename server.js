@@ -4,7 +4,7 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import dotenv from "dotenv";
-import pool from "./src/config/db.js";
+
 import healthRoutes from "./src/routes/health.js";
 import authRoutes from "./src/routes/auth.js";
 import proposalRoutes from "./src/routes/proposals.js";
@@ -32,7 +32,7 @@ const allowedOrigins = [
 
 const corsOptions = {
   origin: function (origin, callback) {
-    if (!origin) return callback(null, true);            // curl / Postman
+    if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) return callback(null, true);
     console.log("[CORS] Rejected origin:", origin);
     callback(new Error(`CORS blocked: ${origin}`));
@@ -43,7 +43,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options(/.*/, cors(corsOptions));   // preflight for every route
+app.options(/.*/, cors(corsOptions));
 
 // ---- Body parsing & logging ----
 app.use(express.json({ limit: "1mb" }));
@@ -55,6 +55,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/proposals", proposalRoutes);
 app.use("/api/executions", executionRoutes);
 
+// ---- Scheduled job trigger (called by external cron) ----
 app.post("/api/jobs/run-proposals", async (req, res, next) => {
   const secret = req.headers["x-job-secret"];
   if (!secret || secret !== process.env.JOB_SECRET) {
@@ -76,35 +77,6 @@ app.get("/", (req, res) => {
     version: "0.1.0",
     status: "running"
   });
-});
-
-// src/routes/auth.js — add near the other routes
-router.post("/pause", requireAuth, async (req, res, next) => {
-  try {
-    await pool.query("UPDATE users SET paused = true WHERE id = $1", [req.user.id]);
-    res.json({ paused: true });
-  } catch (err) { next(err); }
-});
-
-router.post("/resume", requireAuth, async (req, res, next) => {
-  try {
-    await pool.query("UPDATE users SET paused = false WHERE id = $1", [req.user.id]);
-    res.json({ paused: false });
-  } catch (err) { next(err); }
-});
-
-// ---- Temporary diagnostic route ----
-app.get("/api/debug/db", async (req, res) => {
-  try {
-    const result = await pool.query("SELECT NOW() as time");
-    res.json({ connected: true, time: result.rows[0].time });
-  } catch (err) {
-    res.status(500).json({
-      connected: false,
-      error: err.message,
-      code: err.code
-    });
-  }
 });
 
 // ---- 404 Handler ----
