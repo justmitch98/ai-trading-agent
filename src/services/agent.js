@@ -1,4 +1,70 @@
 // src/services/agent.js
+import Anthropic from "@anthropic-ai/sdk";
+
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+const SYSTEM_PROMPT = `You are a trading analyst generating candidate trade proposals for a paper-trading platform.
+
+The user has NOT specified a request. Your job is to analyze current market conditions
+and propose 0 to 3 trades worth considering.
+
+STRICT RULES:
+- Respond ONLY with valid JSON. No prose, no markdown fences.
+- Shape:
+  {
+    "proposals": [
+      {
+        "action": "BUY" | "SELL",
+        "symbol": "GOLD" | "SILVER" | "COPPER" | "OIL" | "BTC",
+        "quantity": number,
+        "orderType": "MARKET" | "LIMIT",
+        "limitPrice": number | null,
+        "reasoning": string
+      }
+    ]
+  }
+- If market conditions do not justify a proposal, return {"proposals": []}.
+- Max notional per trade: $50 (paper trading).
+- Reasoning must be factual and reference the instrument's actual characteristics,
+  not invented price levels or news.
+- Never mention returns, profit projections, or guaranteed outcomes.`;
+
+export async function generateScheduledProposals({ userId }) {
+  const response = await anthropic.messages.create({
+    model: "claude-sonnet-4-5",
+    max_tokens: 1500,
+    system: SYSTEM_PROMPT,
+    messages: [{
+      role: "user",
+      content: "Generate today's candidate proposals."
+    }]
+  });
+
+  const text = response.content[0].text.trim();
+
+  let parsed;
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    console.error("[AGENT] Non-JSON response:", text.slice(0, 200));
+    return [];
+  }
+
+  if (!Array.isArray(parsed.proposals)) return [];
+
+  return parsed.proposals.filter(validateProposal).slice(0, 3);
+}
+
+function validateProposal(p) {
+  if (!p || typeof p !== "object") return false;
+  if (!["BUY", "SELL"].includes(p.action)) return false;
+  if (!["GOLD", "SILVER", "COPPER", "OIL", "BTC"].includes(p.symbol)) return false;
+  if (typeof p.quantity !== "number" || p.quantity <= 0 || p.quantity > 100) return false;
+  if (!["MARKET", "LIMIT"].includes(p.orderType)) return false;
+  if (p.orderType === "LIMIT" && (typeof p.limitPrice !== "number" || p.limitPrice <= 0)) return false;
+  if (typeof p.reasoning !== "string" || p.reasoning.length === 0) return false;
+  return true;
+}
 
 // Supported instruments — kept small for the mock
 const INSTRUMENTS = {
