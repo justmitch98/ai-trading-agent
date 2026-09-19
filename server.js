@@ -1,4 +1,5 @@
 // server.js
+import proposalRoutes from "./src/routes/proposals.js";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -27,6 +28,7 @@ app.use(morgan("dev"));
 // ---- Routes ----
 app.use("/api/health", healthRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/proposals", proposalRoutes);
 
 // ---- Root ----
 app.get("/", (req, res) => {
