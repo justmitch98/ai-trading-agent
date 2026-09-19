@@ -26,7 +26,7 @@ export async function runScheduledProposals() {
 
   for (const user of users) {
     try {
-      const drafts = await generateScheduledProposals({ userId: user.id });
+      const drafts = await generateScheduledProposals();
 
       for (const draft of drafts) {
         await pool.query(
